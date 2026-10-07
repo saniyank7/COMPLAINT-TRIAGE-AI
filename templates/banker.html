@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BankCare - Banker Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #f5f0ff, #fdf7ff, #eef7ff);
+            color: #2d2d3a;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid #e7e1f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 21px;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 700;
+            color: #34265c;
+        }
+
+        .dashboard-label {
+            background: #f1ebff;
+            color: #7048c8;
+            padding: 9px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ================= MAIN ================= */
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 38px 25px 60px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 31px;
+            color: #34265c;
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: #77758a;
+            font-size: 15px;
+        }
+
+        .refresh-btn {
+            border: none;
+            background: #7048c8;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #5d38b0;
+            transform: translateY(-1px);
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e9e3f2;
+            border-radius: 17px;
+            padding: 22px;
+            box-shadow: 0 5px 20px rgba(80, 60, 120, 0.05);
+        }
+
+        .stat-title {
+            color: #858294;
+            font-size: 13px;
+            margin-bottom: 9px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 700;
+            color: #34265c;
+        }
+
+        .stat-card.urgent-stat {
+            border-left: 5px solid #dc3545;
+        }
+
+        .stat-card.normal-stat {
+            border-left: 5px solid #36a269;
+        }
+
+        /* ================= SECTIONS ================= */
+
+        .complaint-section {
+            margin-top: 35px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 19px;
+            border-radius: 14px;
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            font-size: 21px;
+            margin: 0;
+        }
+
+        .section-count {
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .urgent-heading {
+            background: #fff0f1;
+            color: #b42332;
+            border: 1px solid #ffd5d9;
+        }
+
+        .urgent-heading .section-count {
+            background: #dc3545;
+            color: white;
+        }
+
+        .normal-heading {
+            background: #eefaf3;
+            color: #18794e;
+            border: 1px solid #d2f0de;
+        }
+
+        .normal-heading .section-count {
+            background: #36a269;
+            color: white;
+        }
+
+        /* ================= COMPLAINT CARD ================= */
+
+        .complaint-card {
+            background: white;
+            border: 1px solid #e7e2ef;
+            border-radius: 17px;
+            padding: 24px;
+            margin-bottom: 17px;
+            box-shadow: 0 5px 18px rgba(80, 60, 120, 0.05);
+        }
+
+        .urgent-card {
+            border-left: 6px solid #dc3545;
+            box-shadow: 0 5px 22px rgba(220, 53, 69, 0.08);
+        }
+
+        .normal-card {
+            border-left: 6px solid #36a269;
+        }
+
+        .complaint-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .complaint-id {
+            font-size: 17px;
+            font-weight: 700;
+            color: #34265c;
+            margin-bottom: 5px;
+        }
+
+        .complaint-date {
+            font-size: 12px;
+            color: #9995a8;
+        }
+
+        .priority-badge {
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .urgent-badge {
+            background: #ffe2e5;
+            color: #b42332;
+        }
+
+        .normal-badge {
+            background: #e2f6ea;
+            color: #18794e;
+        }
+
+        /* ================= CUSTOMER COMPLAINT ================= */
+
+        .customer-complaint {
+            background: #faf9fc;
+            border-radius: 12px;
+            padding: 17px;
+            margin-bottom: 18px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            color: #8a8797;
+            margin-bottom: 7px;
+        }
+
+        .customer-text {
+            font-size: 14px;
+            line-height: 1.65;
+            color: #3f3c4b;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* ================= AI ANALYSIS ================= */
+
+        .ai-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #4c4263;
+            margin-bottom: 12px;
+        }
+
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 13px;
+        }
+
+        .ai-field {
+            background: #f8f6fc;
+            padding: 15px;
+            border-radius: 11px;
+        }
+
+        .ai-value {
+            font-size: 14px;
+            color: #403b4d;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        /* ================= URGENCY ================= */
+
+        .urgency-box {
+            margin-top: 16px;
+            background: #fff5e8;
+            border: 1px solid #ffdca8;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .urgency-title {
+            color: #9a5b08;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .urgency-text {
+            color: #76521e;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        /* ================= EMPTY / LOADING ================= */
+
+        .empty-state {
+            background: white;
+            border: 1px dashed #d8d2e3;
+            border-radius: 15px;
+            padding: 35px;
+            text-align: center;
+            color: #858294;
+        }
+
+        .empty-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #77758a;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e5def3;
+            border-top: 3px solid #7048c8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-box {
+            background: #fff0f0;
+            color: #b42332;
+            border: 1px solid #ffd0d5;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .container {
+                padding: 25px 15px 45px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .complaint-top {
+                flex-direction: column;
+            }
+
+            .dashboard-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <div class="brand">
+            <div class="brand-icon">🏦</div>
+            <div class="brand-name">BankCare</div>
+        </div>
+
+        <div class="dashboard-label">
+            Banker Dashboard
+        </div>
+
+    </nav>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+
+        <div class="page-header">
+
+            <div>
+                <h1>Complaint Dashboard</h1>
+                <p>
+                    AI-assisted complaint analysis and priority management
+                </p>
+            </div>
+
+            <button class="refresh-btn" onclick="loadComplaints()">
+                ↻ Refresh
+            </button>
+
+        </div>
+
+
+        <!-- ================= ERROR ================= -->
+
+        <div id="errorBox" class="error-box"></div>
+
+
+        <!-- ================= STATS ================= -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    Total Complaints
+                </div>
+
+                <div class="stat-number" id="totalCount">
+                    0
+                </div>
+            </div>
+
+
+            <div class="stat-card urgent-stat">
+                <div class="stat-title">
+                    Urgent Complaints
+                </div>
+
+                <div class="stat-number" id="urgentCount">
+                    0
+                </div>
+            </div>
+
+
+            <div class="stat-card normal-stat">
+                <div class="stat-title">
+                    Normal Complaints
+                </div>
+
+                <div class="stat-number" id="normalCount">
+                    0
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ================= LOADING ================= -->
+
+        <div id="loading" class="loading">
+
+            <div class="spinner"></div>
+
+            Loading complaints...
+
+        </div>
+
+
+        <!-- ================= COMPLAINTS ================= -->
+
+        <div id="complaintsContainer" style="display:none;">
+
+            <!-- Urgent complaints will appear here -->
+
+            <section class="complaint-section">
+
+                <div class="section-heading urgent-heading">
+
+                    <h2>
+                        🔴 Priority / Urgent Complaints
+                    </h2>
+
+                    <span
+                        class="section-count"
+                        id="urgentSectionCount">
+                        0
+                    </span>
+
+                </div>
+
+                <div id="urgentComplaints"></div>
+
+            </section>
+
+
+            <!-- Normal complaints -->
+
+            <section class="complaint-section">
+
+                <div class="section-heading normal-heading">
+
+                    <h2>
+                        🟢 Normal Complaints
+                    </h2>
+
+                    <span
+                        class="section-count"
+                        id="normalSectionCount">
+                        0
+                    </span>
+
+                </div>
+
+                <div id="normalComplaints"></div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        /* =====================================================
+           HTML ESCAPE
+        ===================================================== */
+
+        function escapeHtml(value) {
+
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+
+        /* =====================================================
+           CREATE COMPLAINT CARD
+        ===================================================== */
+
+        function createComplaintCard(complaint, urgent) {
+
+            const priorityBadge = urgent
+                ? `
+                    <span class="priority-badge urgent-badge">
+                        🔴 URGENT
+                    </span>
+                  `
+                : `
+                    <span class="priority-badge normal-badge">
+                        🟢 NORMAL
+                    </span>
+                  `;
+
+
+            const urgencyReason = urgent
+                ? `
+                    <div class="urgency-box">
+
+                        <div class="urgency-title">
+                            ⚠ Why this complaint is urgent
+                        </div>
+
+                        <div class="urgency-text">
+                            ${escapeHtml(
+                                complaint.urgency_reason ||
+                                "High-priority complaint detected by AI."
+                            )}
+                        </div>
+
+                    </div>
+                  `
+                : "";
+
+
+            return `
+
+                <div class="complaint-card ${urgent ? "urgent-card" : "normal-card"}">
+
+                    <!-- TOP -->
+
+                    <div class="complaint-top">
+
+                        <div>
+
+                            <div class="complaint-id">
+                                Complaint #${escapeHtml(complaint.id)}
+                            </div>
+
+                            <div class="complaint-date">
+                                Submitted:
+                                ${escapeHtml(complaint.created_at)}
+                            </div>
+
+                        </div>
+
+                        ${priorityBadge}
+
+                    </div>
+
+
+                    <!-- ORIGINAL CUSTOMER COMPLAINT -->
+
+                    <div class="customer-complaint">
+
+                        <span class="field-label">
+                            Customer Complaint
+                        </span>
+
+                        <div class="customer-text">
+                            ${escapeHtml(complaint.complaint_text)}
+                        </div>
+
+                    </div>
+
+
+                    <!-- AI ANALYSIS -->
+
+                    <div class="ai-title">
+                        🤖 AI Analysis
+                    </div>
+
+
+                    <div class="ai-grid">
+
+                        <div class="ai-field">
+
+                            <span class="field-label">
+                                Product
+                            </span>
+
+                            <div class="ai-value">
+                                ${escapeHtml(
+                                    complaint.product || "-"
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div class="ai-field">
+
+                            <span class="field-label">
+                                Issue
+                            </span>
+
+                            <div class="ai-value">
+                                ${escapeHtml(
+                                    complaint.issue || "-"
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div class="ai-field">
+
+                            <span class="field-label">
+                                AI Summary
+                            </span>
+
+                            <div class="ai-value">
+                                ${escapeHtml(
+                                    complaint.summary || "-"
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div class="ai-field">
+
+                            <span class="field-label">
+                                Processing Latency
+                            </span>
+
+                            <div class="ai-value">
+                                ${escapeHtml(
+                                    complaint.latency_ms || 0
+                                )} ms
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- URGENCY REASON -->
+
+                    ${urgencyReason}
+
+                </div>
+
+            `;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        function emptyState(message) {
+
+            return `
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        ${message}
+                    </div>
+
+                </div>
+
+            `;
+        }
+
+
+        /* =====================================================
+           LOAD COMPLAINTS
+        ===================================================== */
+
+        async function loadComplaints() {
+
+            const loading =
+                document.getElementById("loading");
+
+            const container =
+                document.getElementById("complaintsContainer");
+
+            const errorBox =
+                document.getElementById("errorBox");
+
+            const urgentContainer =
+                document.getElementById("urgentComplaints");
+
+            const normalContainer =
+                document.getElementById("normalComplaints");
+
+
+            errorBox.style.display = "none";
+
+            loading.style.display = "block";
+
+            container.style.display = "none";
+
+
+            try {
+
+                const response =
+                    await fetch("/banker/complaints");
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load complaints."
+                    );
+
+                }
+
+
+                const complaints =
+                    await response.json();
+
+
+                /* =============================================
+                   SEPARATE URGENT AND NORMAL
+                ============================================= */
+
+                const urgentComplaints =
+                    complaints.filter(
+                        complaint =>
+                            Boolean(complaint.urgent)
+                    );
+
+
+                const normalComplaints =
+                    complaints.filter(
+                        complaint =>
+                            !Boolean(complaint.urgent)
+                    );
+
+
+                /* =============================================
+                   UPDATE STATISTICS
+                ============================================= */
+
+                document.getElementById("totalCount")
+                    .textContent = complaints.length;
+
+
+                document.getElementById("urgentCount")
+                    .textContent =
+                    urgentComplaints.length;
+
+
+                document.getElementById("normalCount")
+                    .textContent =
+                    normalComplaints.length;
+
+
+                document.getElementById("urgentSectionCount")
+                    .textContent =
+                    urgentComplaints.length;
+
+
+                document.getElementById("normalSectionCount")
+                    .textContent =
+                    normalComplaints.length;
+
+
+                /* =============================================
+                   URGENT COMPLAINTS
+                ============================================= */
+
+                if (urgentComplaints.length === 0) {
+
+                    urgentContainer.innerHTML =
+                        emptyState(
+                            "No urgent complaints at the moment."
+                        );
+
+                } else {
+
+                    urgentContainer.innerHTML =
+                        urgentComplaints
+                            .map(
+                                complaint =>
+                                    createComplaintCard(
+                                        complaint,
+                                        true
+                                    )
+                            )
+                            .join("");
+
+                }
+
+
+                /* =============================================
+                   NORMAL COMPLAINTS
+                ============================================= */
+
+                if (normalComplaints.length === 0) {
+
+                    normalContainer.innerHTML =
+                        emptyState(
+                            "No normal complaints at the moment."
+                        );
+
+                } else {
+
+                    normalContainer.innerHTML =
+                        normalComplaints
+                            .map(
+                                complaint =>
+                                    createComplaintCard(
+                                        complaint,
+                                        false
+                                    )
+                            )
+                            .join("");
+
+                }
+
+
+                loading.style.display = "none";
+
+                container.style.display = "block";
+
+
+            } catch (error) {
+
+                loading.style.display = "none";
+
+                errorBox.textContent =
+                    "Unable to load complaints. " +
+                    error.message;
+
+                errorBox.style.display = "block";
+
+            }
+
+        }
+
+
+        /* =====================================================
+           INITIAL LOAD
+        ===================================================== */
+
+        loadComplaints();
+
+
+        /* =====================================================
+           AUTO REFRESH EVERY 30 SECONDS
+        ===================================================== */
+
+        setInterval(
+            loadComplaints,
+            30000
+        );
+
+    </script>
+
+</body>
+</html>

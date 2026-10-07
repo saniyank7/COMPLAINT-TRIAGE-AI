@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BankCare — Customer Complaint Portal</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, #eee7ff 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #dff5ff 0%, transparent 35%),
+                #faf9ff;
+            color: #29243d;
+        }
+
+        .navbar {
+            height: 72px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #eee9f7;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 21px;
+            font-weight: 700;
+            color: #5540a8;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #8b6ff0, #b99cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 21px;
+            box-shadow: 0 6px 16px rgba(115, 85, 200, 0.2);
+        }
+
+        .secure {
+            font-size: 13px;
+            color: #77718b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .container {
+            width: min(1000px, 92%);
+            margin: 50px auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .hero-icon {
+            width: 74px;
+            height: 74px;
+            margin: 0 auto 18px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #e7ddff, #d9f1ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+        }
+
+        .hero h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+            color: #30294b;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+            color: #77718b;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #eee9f7;
+            border-radius: 25px;
+            padding: 32px;
+            box-shadow: 0 18px 50px rgba(68, 49, 120, 0.08);
+        }
+
+        .card-header {
+            margin-bottom: 22px;
+        }
+
+        .card-header h2 {
+            font-size: 22px;
+            color: #38304f;
+            margin-bottom: 7px;
+        }
+
+        .card-header p {
+            color: #858094;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 220px;
+            resize: vertical;
+            border: 2px solid #eee9f7;
+            border-radius: 18px;
+            padding: 18px;
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #30294b;
+            background: #fcfbff;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: #9a83ed;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(154, 131, 237, 0.1);
+        }
+
+        textarea::placeholder {
+            color: #aaa4b7;
+        }
+
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .counter {
+            color: #9993a7;
+            font-size: 12px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 22px;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            background: linear-gradient(135deg, #7659d9, #a37bea);
+            box-shadow: 0 10px 22px rgba(111, 79, 192, 0.22);
+            transition: 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 26px rgba(111, 79, 192, 0.28);
+        }
+
+        .submit-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.65;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 22px;
+            color: #70698a;
+            font-size: 14px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ddd5f7;
+            border-top-color: #7659d9;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .message {
+            display: none;
+            margin-top: 22px;
+            padding: 18px;
+            border-radius: 16px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .success {
+            background: #eefbf4;
+            border: 1px solid #ccefdc;
+            color: #28734b;
+        }
+
+        .error {
+            background: #fff0f2;
+            border: 1px solid #f5cdd4;
+            color: #a23b4c;
+        }
+
+        .success-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 22px;
+        }
+
+        .info-card {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #eee9f7;
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .info-card .icon {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            color: #48405d;
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            font-size: 12px;
+            color: #8a8497;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            color: #aaa4b7;
+            font-size: 12px;
+            margin: 35px 0;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .secure {
+                display: none;
+            }
+
+            .container {
+                margin: 35px auto;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <div class="brand-icon">🏦</div>
+            <span>BankCare</span>
+        </div>
+
+        <div class="secure">
+            🔒 Secure Complaint Portal
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <section class="hero">
+            <div class="hero-icon">💬</div>
+
+            <h1>How can we help?</h1>
+
+            <p>
+                Tell us about your banking issue and our support team
+                will review your complaint and get back to you.
+            </p>
+        </section>
+
+        <section class="card">
+
+            <div class="card-header">
+                <h2>Submit your complaint</h2>
+
+                <p>
+                    Please describe your issue clearly. Include relevant
+                    details such as the transaction, service, or problem
+                    you are experiencing.
+                </p>
+            </div>
+
+            <textarea
+                id="complaint"
+                maxlength="10000"
+                placeholder="Example: I noticed a transaction on my account that I did not make. I contacted the bank but have not received a response..."
+            ></textarea>
+
+            <div class="bottom-row">
+                <span class="counter" id="counter">
+                    0 / 10000 characters
+                </span>
+            </div>
+
+            <button class="submit-btn" id="submitBtn" onclick="submitComplaint()">
+                Submit Complaint
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>Submitting your complaint securely...</div>
+            </div>
+
+            <div class="message success" id="successMessage">
+                <div class="success-icon">✅</div>
+
+                <strong>Your complaint has been submitted.</strong>
+
+                <div>
+                    Thank you for contacting us. Our support team will
+                    review your complaint and take the appropriate action.
+                </div>
+            </div>
+
+            <div class="message error" id="errorMessage">
+                <strong>Something went wrong.</strong>
+
+                <div id="errorText">
+                    Please try again.
+                </div>
+            </div>
+
+        </section>
+
+        <section class="info-grid">
+
+            <div class="info-card">
+                <div class="icon">🔐</div>
+                <h3>Secure</h3>
+                <p>
+                    Your complaint is securely submitted to the bank's
+                    complaint processing system.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">⚡</div>
+                <h3>Fast Processing</h3>
+                <p>
+                    Your complaint is automatically processed to help
+                    the support team review it efficiently.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">👩‍💼</div>
+                <h3>Human Review</h3>
+                <p>
+                    Bank staff can review submitted complaints and
+                    take appropriate action.
+                </p>
+            </div>
+
+        </section>
+
+        <footer>
+            BankCare Complaint Management System • Customer Portal
+        </footer>
+
+    </main>
+
+    <script>
+
+        const complaintBox = document.getElementById("complaint");
+        const counter = document.getElementById("counter");
+
+        complaintBox.addEventListener("input", function () {
+            counter.textContent =
+                this.value.length + " / 10000 characters";
+        });
+
+
+        async function submitComplaint() {
+
+            const text = complaintBox.value.trim();
+
+            const submitBtn =
+                document.getElementById("submitBtn");
+
+            const loading =
+                document.getElementById("loading");
+
+            const successMessage =
+                document.getElementById("successMessage");
+
+            const errorMessage =
+                document.getElementById("errorMessage");
+
+            const errorText =
+                document.getElementById("errorText");
+
+
+            successMessage.style.display = "none";
+            errorMessage.style.display = "none";
+
+
+            if (text.length < 10) {
+
+                errorText.textContent =
+                    "Please enter at least 10 characters describing your complaint.";
+
+                errorMessage.style.display = "block";
+
+                complaintBox.focus();
+
+                return;
+            }
+
+
+            submitBtn.disabled = true;
+            loading.style.display = "block";
+
+
+            try {
+
+                const response = await fetch("/submit-complaint", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        text: text
+                    })
+                });
+
+
+                const data = await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.detail || "Unable to submit complaint."
+                    );
+                }
+
+
+                loading.style.display = "none";
+
+                successMessage.style.display = "block";
+
+                complaintBox.value = "";
+
+                counter.textContent = "0 / 10000 characters";
+
+
+            } catch (error) {
+
+                loading.style.display = "none";
+
+                errorText.textContent =
+                    error.message || "Please try again.";
+
+                errorMessage.style.display = "block";
+
+            } finally {
+
+                submitBtn.disabled = false;
+
+            }
+        }
+
+    </script>
+
+</body>
+</html>
+
