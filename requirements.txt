@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic>=2
+openai
+python-dotenv
+pandas
+scikit-learn
+pytest
+httpx
