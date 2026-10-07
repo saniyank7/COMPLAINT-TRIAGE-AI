@@ -1,0 +1,6 @@
+{
+  "n_train": 1159,
+  "n_test": 300,
+  "accuracy": 0.76,
+  "macro_f1": 0.6244
+}

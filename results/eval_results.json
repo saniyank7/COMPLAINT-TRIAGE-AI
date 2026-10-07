@@ -1,0 +1,11 @@
+{
+  "n_evaluated": 256,
+  "llm_accuracy": 0.8516,
+  "first_try_valid_json_rate": 0.9961,
+  "final_failure_rate": 0.0,
+  "median_latency_ms": 2936,
+  "avg_tokens_per_call": 812.7,
+  "urgency_n_labeled": 50,
+  "urgency_agreement": 0.66,
+  "baseline_accuracy": 0.76
+}
